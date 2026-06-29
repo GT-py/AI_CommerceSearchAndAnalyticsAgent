@@ -1,10 +1,25 @@
+# Environment files
+.env
+.env.local
+
 # Python-generated files
 __pycache__/
 *.py[oc]
+.pytest_cache/
 build/
 dist/
 wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.venv/
+
+# Node / Next.js
+node_modules/
+.next/
+
+# Docker / database data
+postgres_data/
+
+# OS files
+.DS_Store
