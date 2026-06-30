@@ -86,3 +86,20 @@ TOKEN="<ログインで取得したaccess_token>"
 curl http://localhost:8000/auth/me \
   -H "Authorization: Bearer ${TOKEN}"
 ```
+
+## 商品API
+- GET /products
+- GET /products/{product_id}
+- POST /admin/products
+- PATCH /admin/products/{product_id}
+- DELETE /admin/products/{product_id}
+
+## 検索機能
+- keyword
+- category_id
+- min_price / max_price
+- sort
+- page / limit
+
+## 検索ログ
+商品検索時に search_logs へ検索条件と結果件数を保存する。result_count は検索条件に一致した総件数。
