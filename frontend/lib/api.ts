@@ -6,6 +6,12 @@ import type {
   ProductQuery,
 } from "@/types/product";
 import type {
+  AnalyticsSummary,
+  AssistantFeedbackAnalyticsResponse,
+  ProductAnalyticsResponse,
+  SearchKeywordAnalyticsResponse,
+} from "@/types/analytics";
+import type {
   AIEvaluationListResponse,
   AssistantChatRequest,
   AssistantChatResponse,
@@ -199,4 +205,30 @@ export function sendAssistantFeedback(payload: AssistantFeedbackRequest, token?:
 
 export function getAdminEvaluations(query: { page?: number; limit?: number }, token: string) {
   return apiFetch<AIEvaluationListResponse>(`/admin/evaluations${buildQueryString(query)}`, { token });
+}
+
+
+export function getAdminAnalyticsSummary(token: string) {
+  return apiFetch<AnalyticsSummary>("/admin/analytics/summary", { token });
+}
+
+export function getAdminAnalyticsSearchKeywords(
+  query: { from_date?: string; to_date?: string; limit?: number },
+  token: string,
+) {
+  return apiFetch<SearchKeywordAnalyticsResponse>(
+    `/admin/analytics/search-keywords${buildQueryString(query)}`,
+    { token },
+  );
+}
+
+export function getAdminAnalyticsProducts(query: { limit?: number }, token: string) {
+  return apiFetch<ProductAnalyticsResponse>(`/admin/analytics/products${buildQueryString(query)}`, { token });
+}
+
+export function getAdminAnalyticsAssistantFeedback(query: { recent_limit?: number }, token: string) {
+  return apiFetch<AssistantFeedbackAnalyticsResponse>(
+    `/admin/analytics/assistant-feedback${buildQueryString(query)}`,
+    { token },
+  );
 }

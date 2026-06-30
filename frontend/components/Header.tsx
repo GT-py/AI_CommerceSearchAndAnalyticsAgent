@@ -68,6 +68,12 @@ export function Header() {
               商品管理
             </Link>
             <Link
+              className={isActive("/admin/analytics") ? "nav-link active" : "nav-link"}
+              href="/admin/analytics"
+            >
+              分析
+            </Link>
+            <Link
               className={isActive("/admin/search-logs") ? "nav-link active" : "nav-link"}
               href="/admin/search-logs"
             >
