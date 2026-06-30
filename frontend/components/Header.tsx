@@ -56,6 +56,9 @@ export function Header() {
         <Link className={isActive("/favorites") ? "nav-link active" : "nav-link"} href="/favorites">
           お気に入り
         </Link>
+        <Link className={isActive("/assistant") ? "nav-link active" : "nav-link"} href="/assistant">
+          AIアシスタント
+        </Link>
         {user?.role === "admin" ? (
           <>
             <Link
@@ -75,6 +78,12 @@ export function Header() {
               href="/admin/click-logs"
             >
               クリックログ
+            </Link>
+            <Link
+              className={isActive("/admin/evaluations") ? "nav-link active" : "nav-link"}
+              href="/admin/evaluations"
+            >
+              AI評価
             </Link>
           </>
         ) : null}

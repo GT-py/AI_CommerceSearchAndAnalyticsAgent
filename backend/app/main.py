@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.admin_evaluations import router as admin_evaluations_router
 from app.api.admin_logs import router as admin_logs_router
 from app.api.admin_products import router as admin_products_router
 from app.api.categories import router as categories_router
 from app.api.products import router as products_router
+from app.api.assistant import router as assistant_router
 from app.api.auth import router as auth_router
 from app.api.debug import router as debug_router
 from app.api.favorites import router as favorites_router
@@ -32,8 +34,10 @@ def create_app() -> FastAPI:
     app.include_router(categories_router)
     app.include_router(favorites_router)
     app.include_router(logs_router)
+    app.include_router(assistant_router)
     app.include_router(admin_products_router)
     app.include_router(admin_logs_router)
+    app.include_router(admin_evaluations_router)
     app.include_router(products_router)
     app.include_router(debug_router)
 

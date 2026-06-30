@@ -110,11 +110,13 @@ curl http://localhost:8000/auth/me \
 - /products
 - /products/[id]
 - /favorites
+- /assistant
 - /admin/products
 - /admin/products/new
 - /admin/products/[id]/edit
 - /admin/search-logs
 - /admin/click-logs
+- /admin/evaluations
 
 ## フロントエンド認証
 開発用としてlocalStorageにJWTを保存する。
@@ -128,3 +130,14 @@ curl http://localhost:8000/auth/me \
 - 商品検索時に search_logs を保存
 - 商品詳細クリック時に click_logs を保存
 - 管理者は /admin/search-logs と /admin/click-logs で確認可能
+
+## AIアシスタント
+- ルールベースで自然文から条件を抽出
+- 商品検索ロジックを呼び出して推薦
+- 推薦理由を生成
+- 会話履歴を保存
+- AI回答にgood/badフィードバック可能
+
+## 設計方針
+現段階ではLLM APIに依存しない。
+後からOpenAI APIやLangChainに差し替えられるよう、条件抽出・商品検索・回答生成を分離している。

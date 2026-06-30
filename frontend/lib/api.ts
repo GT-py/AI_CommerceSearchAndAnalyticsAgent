@@ -6,6 +6,13 @@ import type {
   ProductQuery,
 } from "@/types/product";
 import type {
+  AIEvaluationListResponse,
+  AssistantChatRequest,
+  AssistantChatResponse,
+  AssistantFeedbackRequest,
+  AssistantFeedbackResponse,
+} from "@/types/assistant";
+import type {
   ClickLogListResponse,
   ClickLogResponse,
   ClickSource,
@@ -172,4 +179,24 @@ export function getAdminSearchLogs(query: { page?: number; limit?: number }, tok
 
 export function getAdminClickLogs(query: { page?: number; limit?: number }, token: string) {
   return apiFetch<ClickLogListResponse>(`/admin/logs/clicks${buildQueryString(query)}`, { token });
+}
+
+export function chatWithAssistant(payload: AssistantChatRequest, token?: string | null) {
+  return apiFetch<AssistantChatResponse>("/assistant/chat", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    token,
+  });
+}
+
+export function sendAssistantFeedback(payload: AssistantFeedbackRequest, token?: string | null) {
+  return apiFetch<AssistantFeedbackResponse>("/assistant/feedback", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    token,
+  });
+}
+
+export function getAdminEvaluations(query: { page?: number; limit?: number }, token: string) {
+  return apiFetch<AIEvaluationListResponse>(`/admin/evaluations${buildQueryString(query)}`, { token });
 }
