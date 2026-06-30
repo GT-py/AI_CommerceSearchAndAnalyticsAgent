@@ -5,6 +5,13 @@ import type {
   ProductPayload,
   ProductQuery,
 } from "@/types/product";
+import type {
+  ClickLogListResponse,
+  ClickLogResponse,
+  ClickSource,
+  FavoriteListResponse,
+  SearchLogListResponse,
+} from "@/types/log";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -131,4 +138,38 @@ export function deleteProduct(productId: number, token: string) {
     method: "DELETE",
     token,
   });
+}
+
+export function getFavorites(token: string) {
+  return apiFetch<FavoriteListResponse>("/favorites", { token });
+}
+
+export function addFavorite(productId: number, token: string) {
+  return apiFetch<FavoriteListResponse["items"][number]>(`/favorites/${productId}`, {
+    method: "POST",
+    token,
+  });
+}
+
+export function removeFavorite(productId: number, token: string) {
+  return apiFetch<{ message: string }>(`/favorites/${productId}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export function createClickLog(productId: number, source: ClickSource, token?: string | null) {
+  return apiFetch<ClickLogResponse>("/logs/click", {
+    method: "POST",
+    body: JSON.stringify({ product_id: productId, source }),
+    token,
+  });
+}
+
+export function getAdminSearchLogs(query: { page?: number; limit?: number }, token: string) {
+  return apiFetch<SearchLogListResponse>(`/admin/logs/search${buildQueryString(query)}`, { token });
+}
+
+export function getAdminClickLogs(query: { page?: number; limit?: number }, token: string) {
+  return apiFetch<ClickLogListResponse>(`/admin/logs/clicks${buildQueryString(query)}`, { token });
 }

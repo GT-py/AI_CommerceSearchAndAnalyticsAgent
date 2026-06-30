@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { getProduct } from "@/lib/api";
+import { addFavorite, getFavorites, getProduct, removeFavorite } from "@/lib/api";
+import { getStoredToken } from "@/lib/auth";
 import type { Product } from "@/types/product";
 
 const priceFormatter = new Intl.NumberFormat("ja-JP", {
@@ -20,21 +21,33 @@ function valueOrDash(value: string | number | null) {
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>();
   const productId = Number(params.id);
+  const [token, setToken] = useState<string | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFavoriteBusy, setIsFavoriteBusy] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadProduct() {
+      const storedToken = getStoredToken();
+      setToken(storedToken);
       setIsLoading(true);
       setError(null);
 
       try {
         const result = await getProduct(productId);
+        let nextIsFavorite = false;
+        if (storedToken) {
+          const favorites = await getFavorites(storedToken);
+          nextIsFavorite = favorites.items.some((item) => item.product.id === productId);
+        }
+
         if (isMounted) {
           setProduct(result);
+          setIsFavorite(nextIsFavorite);
         }
       } catch (err) {
         if (isMounted) {
@@ -60,6 +73,30 @@ export default function ProductDetailPage() {
     };
   }, [productId]);
 
+  async function handleFavoriteToggle() {
+    if (!token) {
+      setError("お気に入りにはログインが必要です。");
+      return;
+    }
+
+    setIsFavoriteBusy(true);
+    setError(null);
+
+    try {
+      if (isFavorite) {
+        await removeFavorite(productId, token);
+        setIsFavorite(false);
+      } else {
+        await addFavorite(productId, token);
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "お気に入り操作に失敗しました。");
+    } finally {
+      setIsFavoriteBusy(false);
+    }
+  }
+
   return (
     <main className="page-shell">
       <div className="page-header with-actions">
@@ -81,6 +118,17 @@ export default function ProductDetailPage() {
             <p className="eyebrow">{product.category.name}</p>
             <h2>{product.name}</h2>
             <p className="description-text">{product.description}</p>
+            <div className="form-actions">
+              <button className="button" type="button" disabled={isFavoriteBusy} onClick={handleFavoriteToggle}>
+                {isFavoriteBusy
+                  ? "処理中"
+                  : isFavorite
+                    ? "お気に入り解除"
+                    : token
+                      ? "お気に入り"
+                      : "ログインしてお気に入り"}
+              </button>
+            </div>
             {product.tags.length > 0 ? (
               <div className="tag-list">
                 {product.tags.map((tag) => (

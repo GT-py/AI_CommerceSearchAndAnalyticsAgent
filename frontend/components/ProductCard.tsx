@@ -9,9 +9,21 @@ const priceFormatter = new Intl.NumberFormat("ja-JP", {
 
 type ProductCardProps = {
   product: Product;
+  isAuthenticated?: boolean;
+  isFavorite?: boolean;
+  isFavoriteBusy?: boolean;
+  onFavoriteToggle?: (product: Product) => void;
+  onDetailClick?: (product: Product) => void;
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({
+  product,
+  isAuthenticated = false,
+  isFavorite = false,
+  isFavoriteBusy = false,
+  onFavoriteToggle,
+  onDetailClick,
+}: ProductCardProps) {
   return (
     <article className="product-card">
       <div className="product-card-main">
@@ -45,9 +57,31 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       ) : null}
 
-      <Link className="button button-secondary full-width" href={`/products/${product.id}`}>
-        詳細を見る
-      </Link>
+      <div className="card-actions">
+        {onFavoriteToggle ? (
+          <button
+            className={isFavorite ? "button button-secondary" : "button"}
+            type="button"
+            disabled={isFavoriteBusy}
+            onClick={() => onFavoriteToggle(product)}
+          >
+            {isFavoriteBusy
+              ? "処理中"
+              : isFavorite
+                ? "お気に入り解除"
+                : isAuthenticated
+                  ? "お気に入り"
+                  : "ログインしてお気に入り"}
+          </button>
+        ) : null}
+        <Link
+          className="button button-secondary full-width"
+          href={`/products/${product.id}`}
+          onClick={() => onDetailClick?.(product)}
+        >
+          詳細を見る
+        </Link>
+      </div>
     </article>
   );
 }

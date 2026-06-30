@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Commerce Search & Analytics Agent",
-  description: "????AI????????EC?????",
+  description: "商品検索AIアシスタント付きEC分析アプリ",
 };
 
 export default function RootLayout({

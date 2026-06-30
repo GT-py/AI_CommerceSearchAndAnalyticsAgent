@@ -104,15 +104,27 @@ curl http://localhost:8000/auth/me \
 ## 検索ログ
 商品検索時に search_logs へ検索条件と結果件数を保存する。result_count は検索条件に一致した総件数。
 
-## ??
+## 画面
 - /login
 - /register
 - /products
 - /products/[id]
+- /favorites
 - /admin/products
 - /admin/products/new
 - /admin/products/[id]/edit
+- /admin/search-logs
+- /admin/click-logs
 
-## ?????????
-??????localStorage?JWT??????
-??????HttpOnly Cookie???????
+## フロントエンド認証
+開発用としてlocalStorageにJWTを保存する。
+本番運用ではHttpOnly Cookie等を検討する。
+
+## お気に入り機能
+- ログインユーザーは商品をお気に入り登録できる
+- /favorites でお気に入り一覧を確認できる
+
+## ログ機能
+- 商品検索時に search_logs を保存
+- 商品詳細クリック時に click_logs を保存
+- 管理者は /admin/search-logs と /admin/click-logs で確認可能

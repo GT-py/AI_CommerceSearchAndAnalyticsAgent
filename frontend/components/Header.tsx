@@ -53,13 +53,30 @@ export function Header() {
         <Link className={isActive("/products") ? "nav-link active" : "nav-link"} href="/products">
           商品一覧
         </Link>
+        <Link className={isActive("/favorites") ? "nav-link active" : "nav-link"} href="/favorites">
+          お気に入り
+        </Link>
         {user?.role === "admin" ? (
-          <Link
-            className={isActive("/admin/products") ? "nav-link active" : "nav-link"}
-            href="/admin/products"
-          >
-            管理者商品管理
-          </Link>
+          <>
+            <Link
+              className={isActive("/admin/products") ? "nav-link active" : "nav-link"}
+              href="/admin/products"
+            >
+              商品管理
+            </Link>
+            <Link
+              className={isActive("/admin/search-logs") ? "nav-link active" : "nav-link"}
+              href="/admin/search-logs"
+            >
+              検索ログ
+            </Link>
+            <Link
+              className={isActive("/admin/click-logs") ? "nav-link active" : "nav-link"}
+              href="/admin/click-logs"
+            >
+              クリックログ
+            </Link>
+          </>
         ) : null}
       </nav>
 

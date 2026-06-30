@@ -7,9 +7,17 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import { Pagination } from "@/components/Pagination";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchForm } from "@/components/SearchForm";
-import { buildQueryString, getCategories, getProducts } from "@/lib/api";
+import {
+  addFavorite,
+  buildQueryString,
+  createClickLog,
+  getCategories,
+  getFavorites,
+  getProducts,
+  removeFavorite,
+} from "@/lib/api";
 import { getStoredToken } from "@/lib/auth";
-import type { Category, ProductListResponse, ProductQuery, ProductSort } from "@/types/product";
+import type { Category, Product, ProductListResponse, ProductQuery, ProductSort } from "@/types/product";
 
 const sortValues = new Set(["price_asc", "price_desc", "rating_desc", "newest"]);
 
@@ -41,8 +49,11 @@ function ProductsContent() {
   const searchParams = useSearchParams();
   const queryString = searchParams.toString();
   const query = useMemo(() => parseQuery(new URLSearchParams(queryString)), [queryString]);
+  const [token, setToken] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<ProductListResponse | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<Set<number>>(new Set());
+  const [favoriteBusyIds, setFavoriteBusyIds] = useState<Set<number>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -50,17 +61,27 @@ function ProductsContent() {
     let isMounted = true;
 
     async function loadProducts() {
+      const storedToken = getStoredToken();
+      setToken(storedToken);
       setIsLoading(true);
       setError(null);
 
       try {
         const [categoryItems, productResult] = await Promise.all([
           getCategories(),
-          getProducts(query, getStoredToken()),
+          getProducts(query, storedToken),
         ]);
+
+        let nextFavoriteIds = new Set<number>();
+        if (storedToken) {
+          const favoriteResult = await getFavorites(storedToken);
+          nextFavoriteIds = new Set(favoriteResult.items.map((item) => item.product.id));
+        }
+
         if (isMounted) {
           setCategories(categoryItems);
           setProducts(productResult);
+          setFavoriteIds(nextFavoriteIds);
         }
       } catch (err) {
         if (isMounted) {
@@ -82,6 +103,42 @@ function ProductsContent() {
 
   function moveToQuery(nextQuery: ProductQuery) {
     router.push(`/products${buildQueryString(nextQuery)}`);
+  }
+
+  async function handleFavoriteToggle(product: Product) {
+    if (!token) {
+      setError("お気に入りにはログインが必要です。");
+      return;
+    }
+
+    setFavoriteBusyIds((current) => new Set(current).add(product.id));
+    setError(null);
+
+    try {
+      if (favoriteIds.has(product.id)) {
+        await removeFavorite(product.id, token);
+        setFavoriteIds((current) => {
+          const next = new Set(current);
+          next.delete(product.id);
+          return next;
+        });
+      } else {
+        await addFavorite(product.id, token);
+        setFavoriteIds((current) => new Set(current).add(product.id));
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "お気に入り操作に失敗しました。");
+    } finally {
+      setFavoriteBusyIds((current) => {
+        const next = new Set(current);
+        next.delete(product.id);
+        return next;
+      });
+    }
+  }
+
+  function handleDetailClick(product: Product) {
+    void createClickLog(product.id, "search", token).catch(() => undefined);
   }
 
   return (
@@ -107,7 +164,17 @@ function ProductsContent() {
       </section>
 
       <section className="product-grid">
-        {products?.items.map((product) => <ProductCard key={product.id} product={product} />)}
+        {products?.items.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            isAuthenticated={Boolean(token)}
+            isFavorite={favoriteIds.has(product.id)}
+            isFavoriteBusy={favoriteBusyIds.has(product.id)}
+            onFavoriteToggle={handleFavoriteToggle}
+            onDetailClick={handleDetailClick}
+          />
+        ))}
       </section>
 
       {!isLoading && products?.items.length === 0 ? <p className="empty-state">該当する商品がありません。</p> : null}

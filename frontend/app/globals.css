@@ -397,6 +397,16 @@ button:disabled {
   font-weight: 800;
 }
 
+
+.card-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.card-actions .button {
+  width: 100%;
+}
+
 .pagination {
   justify-content: center;
   margin-top: 24px;
