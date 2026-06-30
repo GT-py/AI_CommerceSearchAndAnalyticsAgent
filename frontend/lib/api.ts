@@ -1,3 +1,4 @@
+import type { SQLAgentQueryRequest, SQLAgentQueryResponse } from "@/types/sqlAgent";
 import type {
   Category,
   Product,
@@ -231,4 +232,13 @@ export function getAdminAnalyticsAssistantFeedback(query: { recent_limit?: numbe
     `/admin/analytics/assistant-feedback${buildQueryString(query)}`,
     { token },
   );
+}
+
+
+export function querySqlAgent(payload: SQLAgentQueryRequest, token: string) {
+  return apiFetch<SQLAgentQueryResponse>("/admin/sql-agent/query", {
+    method: "POST",
+    body: JSON.stringify(payload),
+    token,
+  });
 }

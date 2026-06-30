@@ -74,6 +74,12 @@ export function Header() {
               分析
             </Link>
             <Link
+              className={isActive("/admin/sql-agent") ? "nav-link active" : "nav-link"}
+              href="/admin/sql-agent"
+            >
+              SQL分析Agent
+            </Link>
+            <Link
               className={isActive("/admin/search-logs") ? "nav-link active" : "nav-link"}
               href="/admin/search-logs"
             >

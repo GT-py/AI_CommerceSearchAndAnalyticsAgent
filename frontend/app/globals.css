@@ -587,6 +587,17 @@ tr:last-child td {
   line-height: 1;
 }
 
+.sample-question-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sample-question-list .button {
+  justify-content: flex-start;
+  width: auto;
+}
+
 @media (max-width: 980px) {
   .site-header {
     grid-template-columns: 1fr;
