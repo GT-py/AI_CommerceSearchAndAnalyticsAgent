@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { Header } from "@/components/Header";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Commerce Search & Analytics Agent",
-  description: "商品検索AIアシスタント付きEC分析アプリ",
+  description: "????AI????????EC?????",
 };
 
 export default function RootLayout({
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }

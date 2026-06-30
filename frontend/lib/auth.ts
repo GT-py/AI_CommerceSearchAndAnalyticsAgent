@@ -1,15 +1,25 @@
 import { apiFetch } from "./api";
+import type { AuthToken, AuthUser } from "@/types/user";
 
-export type AuthUser = {
-  id: number;
-  email: string;
-  role: "user" | "admin";
-};
+export const ACCESS_TOKEN_STORAGE_KEY = "acsaa_access_token";
 
-export type AuthToken = {
-  access_token: string;
-  token_type: "bearer";
-};
+export function getStoredToken() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
+export function setStoredToken(token: string) {
+  window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  window.dispatchEvent(new Event("auth:changed"));
+}
+
+export function clearStoredToken() {
+  window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+  window.dispatchEvent(new Event("auth:changed"));
+}
 
 export function register(email: string, password: string) {
   return apiFetch<AuthUser>("/auth/register", {
@@ -25,16 +35,33 @@ export function login(email: string, password: string) {
   });
 }
 
-export function logout() {
-  return apiFetch<{ message: string }>("/auth/logout", {
-    method: "POST",
-  });
+export async function logout() {
+  try {
+    await apiFetch<{ message: string }>("/auth/logout", {
+      method: "POST",
+      token: getStoredToken(),
+    });
+  } finally {
+    clearStoredToken();
+  }
 }
 
 export function getMe(accessToken: string) {
   return apiFetch<AuthUser>("/auth/me", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    token: accessToken,
   });
+}
+
+export async function getStoredUser() {
+  const token = getStoredToken();
+  if (!token) {
+    return null;
+  }
+
+  try {
+    return await getMe(token);
+  } catch {
+    clearStoredToken();
+    return null;
+  }
 }
