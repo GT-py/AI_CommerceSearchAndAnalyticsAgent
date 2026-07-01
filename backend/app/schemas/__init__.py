@@ -3,6 +3,7 @@ from app.schemas.assistant import AIEvaluationListResponse, AIEvaluationRead, AI
 from app.schemas.auth import LoginRequest, LogoutResponse, RegisterRequest, Token
 from app.schemas.category import CategoryCreate, CategoryRead, CategoryUpdate
 from app.schemas.favorite import FavoriteListResponse, FavoriteRead
+from app.schemas.etl import DailySearchMetricListResponse, DailySearchMetricRead, ETLRunResponse, ProductFeatureListResponse, ProductFeatureRead
 from app.schemas.common import ORMModel
 from app.schemas.log import ClickLogCreate, ClickLogListResponse, ClickLogRead, ClickLogResponse, SearchLogListResponse, SearchLogRead
 from app.schemas.product import ProductCreate, ProductListResponse, ProductRead, ProductUpdate
@@ -36,6 +37,11 @@ __all__ = [
     "ClickLogListResponse",
     "ClickLogRead",
     "ClickLogResponse",
+    "DailySearchMetricListResponse",
+    "DailySearchMetricRead",
+    "ETLRunResponse",
+    "ProductFeatureListResponse",
+    "ProductFeatureRead",
     "FavoriteListResponse",
     "FavoriteRead",
     "SearchLogListResponse",

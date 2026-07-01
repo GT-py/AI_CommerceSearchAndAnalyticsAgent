@@ -80,6 +80,18 @@ export function Header() {
               SQL分析Agent
             </Link>
             <Link
+              className={isActive("/admin/metrics/daily-search") ? "nav-link active" : "nav-link"}
+              href="/admin/metrics/daily-search"
+            >
+              日次指標
+            </Link>
+            <Link
+              className={isActive("/admin/features/products") ? "nav-link active" : "nav-link"}
+              href="/admin/features/products"
+            >
+              商品特徴量
+            </Link>
+            <Link
               className={isActive("/admin/search-logs") ? "nav-link active" : "nav-link"}
               href="/admin/search-logs"
             >

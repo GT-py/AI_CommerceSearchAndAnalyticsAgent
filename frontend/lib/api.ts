@@ -1,4 +1,5 @@
 import type { SQLAgentQueryRequest, SQLAgentQueryResponse } from "@/types/sqlAgent";
+import type { DailySearchMetricListResponse, ETLRunResponse, ProductFeatureListResponse } from "@/types/etl";
 import type {
   Category,
   Product,
@@ -241,4 +242,26 @@ export function querySqlAgent(payload: SQLAgentQueryRequest, token: string) {
     body: JSON.stringify(payload),
     token,
   });
+}
+
+
+export function runEtl(token: string) {
+  return apiFetch<ETLRunResponse>("/admin/etl/run", {
+    method: "POST",
+    token,
+  });
+}
+
+export function getDailySearchMetrics(
+  query: { from_date?: string; to_date?: string; keyword?: string; page?: number; limit?: number },
+  token: string,
+) {
+  return apiFetch<DailySearchMetricListResponse>(
+    `/admin/metrics/daily-search${buildQueryString(query)}`,
+    { token },
+  );
+}
+
+export function getProductFeatures(query: { date?: string; page?: number; limit?: number }, token: string) {
+  return apiFetch<ProductFeatureListResponse>(`/admin/features/products${buildQueryString(query)}`, { token });
 }

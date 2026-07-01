@@ -12,6 +12,7 @@ from app.api.assistant import router as assistant_router
 from app.api.auth import router as auth_router
 from app.api.debug import router as debug_router
 from app.api.favorites import router as favorites_router
+from app.api.etl import router as etl_router
 from app.api.health import router as health_router
 from app.api.logs import router as logs_router
 
@@ -41,6 +42,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_logs_router)
     app.include_router(admin_evaluations_router)
     app.include_router(admin_analytics_router)
+    app.include_router(etl_router)
     app.include_router(sql_agent_router)
     app.include_router(products_router)
     app.include_router(debug_router)

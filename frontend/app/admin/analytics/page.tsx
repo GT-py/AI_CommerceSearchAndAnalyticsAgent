@@ -8,6 +8,7 @@ import {
   getAdminAnalyticsProducts,
   getAdminAnalyticsSearchKeywords,
   getAdminAnalyticsSummary,
+  runEtl,
 } from "@/lib/api";
 import { getMe, getStoredToken } from "@/lib/auth";
 import type {
@@ -49,6 +50,8 @@ export default function AdminAnalyticsPage() {
   const [products, setProducts] = useState<ProductAnalyticsResponse | null>(null);
   const [feedback, setFeedback] = useState<AssistantFeedbackAnalyticsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [etlMessage, setEtlMessage] = useState<string | null>(null);
+  const [isRunningEtl, setIsRunningEtl] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -101,6 +104,29 @@ export default function AdminAnalyticsPage() {
     };
   }, [router]);
 
+  async function handleRunEtl() {
+    const storedToken = getStoredToken();
+    if (!storedToken) {
+      router.push("/login");
+      return;
+    }
+
+    setIsRunningEtl(true);
+    setError(null);
+    setEtlMessage(null);
+
+    try {
+      const result = await runEtl(storedToken);
+      setEtlMessage(
+        `ETL completed: daily_search_metrics=${result.daily_search_metrics_count}, product_features=${result.product_features_count}`,
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ETL実行に失敗しました。");
+    } finally {
+      setIsRunningEtl(false);
+    }
+  }
+
   return (
     <main className="page-shell wide">
       <section className="page-header">
@@ -109,6 +135,14 @@ export default function AdminAnalyticsPage() {
       </section>
 
       <ErrorMessage message={error} />
+      <section className="section-panel etl-panel">
+        <h2 className="section-title">ETL / Feature生成</h2>
+        <p className="muted">検索ログ・クリックログ・お気に入りから日次指標と商品特徴量を生成します。</p>
+        <button className="button" type="button" onClick={handleRunEtl} disabled={isRunningEtl}>
+          {isRunningEtl ? "ETL実行中" : "ETLを実行"}
+        </button>
+        {etlMessage ? <p className="muted small-text">{etlMessage}</p> : null}
+      </section>
       {isLoading ? <p className="section-panel">読み込み中</p> : null}
 
       {!isLoading && !error ? (
